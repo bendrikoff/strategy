@@ -3,16 +3,18 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 
-public class ObjectMoveService : MonoBehaviour
+public class ObjectMoveService : MonoBehaviour //Возможно он не раигрует на нарисованные заранее тайлы
 {
-    public Grid grid;                         // Объект сетки
-    public Tilemap tilemap;                   // Tilemap для отображения доступных ячеек
-    public TileBase greenTile;                // Плитка для подсветки доступных ячеек
-    public TileBase redTile;                  // Плитка для подсветки занятых ячеек
-    private GameObject selectedBuilding;      // Выделенное здание для перемещения
-    private IDraggable selectedDraggable;      // Выделенное здание для перемещения
-    private Vector3Int currentCellPosition;   // Позиция текущей ячейки
-    private bool isDragging = false;          // Флаг для перетаскивания здания
+    public Grid grid;                       
+    public Tilemap tilemap;                 
+    public Tilemap tilemap2;                 
+    public TileBase greenTile;              
+    public TileBase redTile;
+    public TileBase occupiedTile;                
+    private GameObject selectedBuilding;    
+    private IDraggable selectedDraggable;      
+    private Vector3Int currentCellPosition;   
+    private bool isDragging = false;          
 
     private PlayerControls controls; // Ссылка на Input Action
 
@@ -22,7 +24,7 @@ public class ObjectMoveService : MonoBehaviour
 
         // Подписываемся на действия Input System
         controls.Player.Click.performed += ctx => OnClick();
-        controls.Player.Drag.performed += ctx => isDragging = true;
+        controls.Player.Drag.performed += ctx => OnStartDragging();
         controls.Player.Drag.canceled += ctx => OnDragEnd();
     }
 
@@ -30,18 +32,17 @@ public class ObjectMoveService : MonoBehaviour
     private void OnDisable() => controls.Disable();
 
     private void Update()
-    {
-        Vector3Int cellPosition = GetGridPositionUnderMouse();
-        tilemap.SetTile(cellPosition, greenTile);
-        Debug.Log(cellPosition);
-
-        /*if (isDragging && selectedBuilding != null)
+    { 
+        if (isDragging && selectedBuilding != null)
         {
             Vector3Int cellPosition = GetGridPositionUnderMouse();
+            cellPosition = new Vector3Int(cellPosition.x, cellPosition.y, 0);           
             selectedBuilding.transform.position = grid.CellToWorld(cellPosition) + grid.cellSize / 2;
-            tilemap.SetTile(cellPosition, greenTile);
-            UpdateCellHighlight(cellPosition);
-        }*/
+            if (selectedBuilding.TryGetComponent<DraggableBuilding>(out var building))
+            {
+                UpdateCellHighlight(cellPosition, building);
+            }
+        }
     }
 
     private void OnClick()
@@ -73,32 +74,25 @@ public class ObjectMoveService : MonoBehaviour
 
     private Vector3Int GetGridPositionUnderMouse()
     {
-        /*Vector2 mousePosition = Mouse.current.position.ReadValue();
-        Ray ray = Camera.main.ScreenPointToRay(mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hitInfo))
-        {
-            Vector3 worldPosition = hitInfo.point;
-            return grid.WorldToCell(worldPosition);
-            
-        }
-        return Vector3Int.zero;*/
-
         Vector2 mousePosition = Mouse.current.position.ReadValue();
         var clickPosition = Camera.main.ScreenToWorldPoint(mousePosition);
         return grid.WorldToCell(clickPosition);
     }
 
-    private void UpdateCellHighlight(Vector3Int cellPosition)
+    private void UpdateCellHighlight(Vector3Int cellPosition, Building building)
     {
         ClearCellHighlight();
-        bool canPlace = IsCellFree(cellPosition);
-        TileBase tileToUse = canPlace ? greenTile : redTile;
-        tilemap.SetTile(cellPosition, tileToUse);
-    }
-
-    private bool IsCellFree(Vector3Int cellPosition)
-    {
-        return tilemap.GetTile(cellPosition) == null;
+        for (int i = 0; i < building.Width; i++)
+        {
+            for (int j = 0; j < building.Heigth; j++)
+            {
+                var position = new Vector3Int(cellPosition.x - j, cellPosition.y - i - 2, 0);
+                var tile = tilemap2.HasTile(position)
+                    ? redTile
+                    : greenTile;
+                tilemap.SetTile(position, tile);
+            }
+        }
     }
 
     private void ClearCellHighlight()
@@ -108,17 +102,41 @@ public class ObjectMoveService : MonoBehaviour
 
     private void PlaceBuilding(Vector3Int cellPosition)
     {
-        if (IsCellFree(cellPosition))
-        {
-            selectedBuilding.transform.position = grid.CellToWorld(cellPosition) + grid.cellSize / 2;
-            MarkCellAsOccupied(cellPosition);
-        }
+        selectedBuilding.transform.position = grid.CellToWorld(cellPosition) + grid.cellSize / 2;
+        MarkCellAsOccupied(cellPosition);
     }
 
     private void MarkCellAsOccupied(Vector3Int cellPosition)
     {
-        TileBase occupiedTile = ScriptableObject.CreateInstance<Tile>();
-        tilemap.SetTile(cellPosition, occupiedTile);
-        transform.position.x = 2;
+        if (selectedBuilding.TryGetComponent<Building>(out var building))
+        {
+            for (int i = 0; i < building.Width; i++)
+            {
+                for (int j = 0; j < building.Heigth; j++)
+                {
+                    var position = new Vector3Int(cellPosition.x - j, cellPosition.y - i - 2, 0);
+                    tilemap2.SetTile(position, occupiedTile);
+                }
+            }
+        }
+    }
+
+    private void OnStartDragging()
+    {
+        Vector3Int cellPosition = GetGridPositionUnderMouse();
+        cellPosition = new Vector3Int(cellPosition.x, cellPosition.y, 0);           
+        selectedBuilding.transform.position = grid.CellToWorld(cellPosition) + grid.cellSize / 2;
+        if (selectedBuilding != null && selectedBuilding.TryGetComponent<Building>(out var building))
+        {
+            for (int i = 0; i < building.Width; i++)
+            {
+                for (int j = 0; j < building.Heigth; j++)
+                {
+                    var position = new Vector3Int(cellPosition.x - j, cellPosition.y - i - 2, 0);
+                    tilemap2.SetTile(position, null);
+                }
+            }
+        }
+        isDragging = true;
     }
 }
