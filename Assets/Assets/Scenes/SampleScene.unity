@@ -31412,8 +31412,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grid: {fileID: 602000769}
-  tilemap: {fileID: 239606452}
-  tilemap2: {fileID: 89252433}
+  HiglightTilemap: {fileID: 239606452}
+  BuildingTilemap: {fileID: 89252433}
   greenTile: {fileID: 11400000, guid: 96e360b51c785de45ac60b636b9d2e65, type: 2}
   redTile: {fileID: 11400000, guid: 4343e63b760f62040bd2e245b7f93f21, type: 2}
   occupiedTile: {fileID: 11400000, guid: 764017b6990ab9e44a7a768bb13eb210, type: 2}
