@@ -41,9 +41,8 @@ public class ObjectMoveService : MonoBehaviour
             selectedBuilding.transform.position = grid.CellToWorld(cellPosition) + grid.cellSize / 2;
             if (selectedBuilding.TryGetComponent<DraggableBuilding>(out var building))
             {
-                UpdateCellHighlight(cellPosition, building);
+                UpdateCellHighlight(grid.WorldToCell(building.TileStartCorner.position), building);
             }
-            
         }
     }
 
@@ -55,7 +54,7 @@ public class ObjectMoveService : MonoBehaviour
 
         if (hitCollider != null && hitCollider.TryGetComponent<IDraggable>(out var draggable))
         {
-            startPosition = grid.WorldToCell(hitCollider.transform.position); 
+            startPosition = grid.WorldToCell(hitCollider.GetComponent<DraggableBuilding>().TileStartCorner.position); 
             selectedDraggable = draggable;
             selectedDraggable.Drag();
             selectedBuilding = hitCollider.gameObject;
@@ -67,17 +66,15 @@ public class ObjectMoveService : MonoBehaviour
         
         if (selectedBuilding != null)
         {
-            Vector3Int cellPosition = GetGridPositionUnderMouse();
-
-            if (selectedBuilding.TryGetComponent<Building>(out var building) && HasTileOnRectangle(building.Width,
-                    building.Heigth, cellPosition, BuildingTilemap))
+            if (selectedBuilding.TryGetComponent<DraggableBuilding>(out var building) && HasTileOnRectangle(building.Width,
+                    building.Heigth, grid.WorldToCell(building.TileStartCorner.position), BuildingTilemap))
             {
-                selectedBuilding.transform.position = grid.CellToWorld(startPosition);
+                selectedBuilding.transform.position = grid.CellToWorld(startPosition); //Тут происходит неправильное перемещениеы 
                 PlaceBuilding(startPosition);
             }
             else
             {
-                PlaceBuilding(cellPosition);
+                PlaceBuilding(grid.WorldToCell(building.TileStartCorner.position));
             }
             
             HiglightTilemap.ClearAllTiles();
@@ -101,7 +98,7 @@ public class ObjectMoveService : MonoBehaviour
         {
             for (int j = 0; j < building.Heigth; j++)
             {
-                var position = new Vector3Int(cellPosition.x - j, cellPosition.y - i, 0);
+                var position = new Vector3Int(cellPosition.x + j, cellPosition.y + i, 0);
                 var tile = BuildingTilemap.HasTile(position)
                     ? redTile
                     : greenTile;
@@ -119,7 +116,7 @@ public class ObjectMoveService : MonoBehaviour
     {
         if (selectedBuilding.TryGetComponent<Building>(out var building))
         {
-            SetRectangleTile(building.Width, building.Heigth, new Vector3Int(startPosition.x-1,startPosition.y,0), null, BuildingTilemap);
+            SetRectangleTile(building.Width, building.Heigth, startPosition, null, BuildingTilemap);
             SetRectangleTile(building.Width, building.Heigth, cellPosition, occupiedTile,BuildingTilemap);
         }
     }
@@ -127,10 +124,10 @@ public class ObjectMoveService : MonoBehaviour
     private void OnStartDragging()
     {
         isDragging = true;
-        if (selectedBuilding != null && selectedBuilding.TryGetComponent<Building>(out var building))
+        if (selectedBuilding != null && selectedBuilding.TryGetComponent<DraggableBuilding>(out var building))
         {
             SetRectangleTile(building.Width, building.Heigth,
-                new Vector3Int(startPosition.x - 1, startPosition.y, 0), null, BuildingTilemap);
+                grid.WorldToCell(building.TileStartCorner.position), null, BuildingTilemap);
         }
     }
 
@@ -140,7 +137,7 @@ public class ObjectMoveService : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                var position = new Vector3Int(cellPosition.x - j, cellPosition.y - i - 2, 0);
+                var position = new Vector3Int(cellPosition.x + j, cellPosition.y + i, 0);
                 tilemap.SetTile(position, tile);
             }
         }
@@ -152,7 +149,7 @@ public class ObjectMoveService : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                var position = new Vector3Int(cellPosition.x - j, cellPosition.y - i - 2, 0);
+                var position = new Vector3Int(cellPosition.x + j, cellPosition.y + i , 0);
                 if (tile == null && tilemap.HasTile(position))
                 {
                     return true;

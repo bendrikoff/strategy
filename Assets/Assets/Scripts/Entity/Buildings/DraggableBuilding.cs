@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class DraggableBuilding : Building, IDraggable
 {
+    public Transform TileStartCorner;
     public float SelectedAlpha = 0.5f;
     
     private SpriteRenderer _image;
