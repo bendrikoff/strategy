@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Tilemaps;
 
 namespace Assets.Scripts.Infrastructure
 {
@@ -7,6 +8,7 @@ namespace Assets.Scripts.Infrastructure
     {
         public Game()
         {
+            
         }
         
         public void Update()

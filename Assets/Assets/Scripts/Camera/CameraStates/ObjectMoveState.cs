@@ -16,7 +16,7 @@ public class ObjectMoveState : IState
     private Vector2 _max;
     private Vector2 _min;
 
-    private ObjectMoveService _objectMoveService;
+    private BuildMoveService _objectMoveService;
 
     public ObjectMoveState(
         Camera camera, 
@@ -24,7 +24,7 @@ public class ObjectMoveState : IState
         float sensitivity,
         Vector2 max,
         Vector2 min,
-        ObjectMoveService objectMoveService)
+        BuildMoveService objectMoveService)
 
     {
         _camera = camera;
@@ -44,26 +44,19 @@ public class ObjectMoveState : IState
     {
         if (_isDragging)
         {
-            // Получаем текущую позицию мыши
             Vector2 currentMousePosition = Mouse.current.position.ReadValue();
 
-            // Вычисляем изменение позиции мыши (разницу)
             Vector2 delta = currentMousePosition - _lastMousePosition;
 
-            // Перемещаем камеру в зависимости от изменения позиции мыши
             Vector3 movement = new Vector3(-delta.x, -delta.y, 0) * _sensitivity;
 
-            // Двигаем камеру
             _camera.transform.Translate(movement * Time.deltaTime);
 
-            // Применяем границы для движения камеры
             float clampedX = Mathf.Clamp(_camera.transform.position.x, _min.x, _max.x);
             float clampedY = Mathf.Clamp(_camera.transform.position.y, _min.y, _max.y);
 
-            // Обновляем позицию камеры, учитывая границы
             _camera.transform.position = new Vector3(clampedX, clampedY, _camera.transform.position.z);
 
-            // Обновляем последнюю позицию мыши
             _lastMousePosition = currentMousePosition;
         }
     }

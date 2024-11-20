@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: BuildingHiglightRed
+  m_Name: redHiglight
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: c39b50d58ca974c4c92551c3505e4464, type: 3}
-  m_Color: {r: 0.99215686, g: 0.21960784, b: 0.21960784, a: 1}
+  m_Sprite: {fileID: 21300000, guid: aa17a84b3454a694e80c969a396472fd, type: 3}
+  m_Color: {r: 1, g: 0.2216981, b: 0.2216981, a: 1}
   m_Transform:
     e00: 1
     e01: 0
