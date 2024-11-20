@@ -66,7 +66,7 @@ public class IdleState : IState
 
     public void Exit()
     {
-        throw new System.NotImplementedException();
+        _controls.Disable();
     }
 
     private void EnableControls()

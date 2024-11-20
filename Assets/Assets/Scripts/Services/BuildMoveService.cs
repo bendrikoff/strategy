@@ -11,7 +11,9 @@ public class BuildMoveService: MonoBehaviour
     public Tilemap BuildingTilemap;                 
     public TileBase GreenTile;              
     public TileBase RedTile;
-    public TileBase OccupiedTile;     
+    public TileBase OccupiedTile;
+
+    [Space] public CameraController CameraController;
                
     private DraggableBuilding _selectedBuilding;    
     private Vector3Int _currentCellPosition;   
@@ -29,8 +31,17 @@ public class BuildMoveService: MonoBehaviour
         _controls.Player.Drag.canceled += ctx => OnDragEnd();
     }
 
-    private void OnEnable() => _controls.Enable();
-    private void OnDisable() => _controls.Disable();
+    private void OnEnable()
+    {
+        _controls.Enable();
+        CameraController.EnterBuildingMoveState();
+    }
+
+    private void OnDisable()
+    {
+        _controls.Disable();
+        CameraController.EnterIdleState();
+    }
 
     private void Update()
     { 

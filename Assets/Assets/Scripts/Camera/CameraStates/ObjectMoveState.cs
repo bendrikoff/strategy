@@ -15,16 +15,13 @@ public class ObjectMoveState : IState
     
     private Vector2 _max;
     private Vector2 _min;
-
-    private BuildMoveService _objectMoveService;
-
+    
     public ObjectMoveState(
         Camera camera, 
         PlayerControls controls,
         float sensitivity,
         Vector2 max,
-        Vector2 min,
-        BuildMoveService objectMoveService)
+        Vector2 min)
 
     {
         _camera = camera;
@@ -32,7 +29,6 @@ public class ObjectMoveState : IState
         _sensitivity = sensitivity;
         _max = max;
         _min = min;
-        _objectMoveService = objectMoveService;
     }
 
     public void Enter()
@@ -42,28 +38,13 @@ public class ObjectMoveState : IState
 
     public void Execute()
     {
-        if (_isDragging)
-        {
-            Vector2 currentMousePosition = Mouse.current.position.ReadValue();
-
-            Vector2 delta = currentMousePosition - _lastMousePosition;
-
-            Vector3 movement = new Vector3(-delta.x, -delta.y, 0) * _sensitivity;
-
-            _camera.transform.Translate(movement * Time.deltaTime);
-
-            float clampedX = Mathf.Clamp(_camera.transform.position.x, _min.x, _max.x);
-            float clampedY = Mathf.Clamp(_camera.transform.position.y, _min.y, _max.y);
-
-            _camera.transform.position = new Vector3(clampedX, clampedY, _camera.transform.position.z);
-
-            _lastMousePosition = currentMousePosition;
-        }
+        return;
+        //todo: После реализации перемещения отдельных зданий добавить перемещение камеры при перемещении здания
     }
 
     public void Exit()
     {
-        throw new System.NotImplementedException();
+        _controls.Disable();
     }
 
     private void EnableControls()
