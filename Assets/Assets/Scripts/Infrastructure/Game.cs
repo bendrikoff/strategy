@@ -6,9 +6,10 @@ namespace Assets.Scripts.Infrastructure
 {
     public class Game
     {
+        public ISaveSystem SaveSystem;
         public Game()
         {
-            
+            SaveSystem = new PlayerPrefsSaveSystem();
         }
         
         public void Update()

@@ -18,5 +18,17 @@ namespace Assets.Scripts.Infrastructure
         {
             _game.Update();
         }
+        
+        public void SaveGame()
+        {
+            _game.SaveSystem.Save("SceneObjects");
+            Debug.Log("Game saved.");
+        }
+
+        public void LoadGame()
+        {
+            _game.SaveSystem.Load("SceneObjects");
+            Debug.Log("Game loaded.");
+        }
     }
 }
