@@ -15,7 +15,7 @@ public class BuildingMoverService: MonoBehaviour
 
     [Space] public CameraController CameraController;
                
-    private DraggableBuilding _selectedBuilding;    
+    public DraggableBuilding _selectedBuilding;    
     private Vector3Int _currentCellPosition;   
     private bool _isDragging = false;
     private Vector3Int _startPosition;
@@ -61,7 +61,7 @@ public class BuildingMoverService: MonoBehaviour
     {
         Collider2D hitCollider = Physics2D.OverlapPoint(Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue()));
 
-        if (hitCollider != null && hitCollider.TryGetComponent<DraggableBuilding>(out var building))
+        if (hitCollider != null && hitCollider.TryGetComponent<DraggableBuilding>(out var building) && building == _selectedBuilding)
         {
             _startPosition = Grid.WorldToCell(building.transform.position); 
             _selectedBuilding = building;

@@ -15,5 +15,10 @@ namespace Assets.Scripts.Entity.Buildings
         {
             return new BuildingData(Stage, Type, transform.position);
         }
+        
+        private void OnMouseDown()
+        {
+            UIEvents.OnSelectedBuilding?.Invoke(this);
+        }
     }
 }
