@@ -24,4 +24,6 @@ public abstract class DraggableBuilding : Building, IDraggable
     {  
         _image.color = _startColor;
     }
+    
+    
 }

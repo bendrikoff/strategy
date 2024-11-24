@@ -18,7 +18,10 @@ namespace Assets.Scripts.Entity.Buildings
         
         private void OnMouseDown()
         {
-            UIEvents.OnSelectedBuilding?.Invoke(this);
+            if (BuildingMoverService.Instance._selectedBuilding == null)
+            {
+                UIEvents.OnSelectedBuilding?.Invoke(this);
+            }
         }
     }
 }

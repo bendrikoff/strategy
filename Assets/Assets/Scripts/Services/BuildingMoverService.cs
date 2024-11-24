@@ -1,9 +1,10 @@
 using Assets.Scripts.Entity.Buildings;
+using Script.Architecture;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 
-public class BuildingMoverService: MonoBehaviour
+public class BuildingMoverService: Singleton<BuildingMoverService>
 {
     [Header("Настройки Tilemap")]
     public Grid Grid;                       
@@ -24,11 +25,18 @@ public class BuildingMoverService: MonoBehaviour
 
     private void Awake()
     {
+        base.Awake();
         _controls = new PlayerControls();
 
         _controls.Player.Click.performed += ctx => OnClick();
         _controls.Player.Drag.performed += ctx => OnStartDragging();
         _controls.Player.Drag.canceled += ctx => OnDragEnd();
+
+        UIEvents.OnMoveBuildingButtonClick += building =>
+        {
+            _selectedBuilding = building;
+            _isDragging = false;
+        };
     }
 
     private void OnEnable()
