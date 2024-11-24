@@ -1,5 +1,10 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
 public interface ISaveable
 {
-    object CaptureState(); // Получить состояние объекта
-    void RestoreState(object state); // Восстановить состояние объекта
+    void SaveState(PlayerData data);
+    
+    void LoadState(PlayerData data);
 }

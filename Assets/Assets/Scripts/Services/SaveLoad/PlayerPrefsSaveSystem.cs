@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.Entity.Buildings;
 using UnityEngine;
 
 public class PlayerPrefsSaveSystem : ISaveSystem
@@ -21,49 +22,30 @@ public class PlayerPrefsSaveSystem : ISaveSystem
         }
 
         var json = PlayerPrefs.GetString(key);
-        var state = JsonUtility.FromJson<StateWrapper>(json); // Десериализация
+        var state = JsonUtility.FromJson<PlayerData>(json); 
         RestoreGameState(state);
     }
 
-    private StateWrapper CaptureGameState()
+    private PlayerData CaptureGameState()
     {
-        var state = new StateWrapper();
+        var data = new PlayerData();
+        data.WorldData = new WorldData();
+        data.WorldData.BuildingData = new List<BuildingData>();
+        
         foreach (var saveable in Object.FindObjectsOfType<MonoBehaviour>().OfType<ISaveable>())
         {
-            state.Objects.Add(new SaveableState
-            {
-                ObjectType = saveable.GetType().FullName,
-                State = JsonUtility.ToJson(saveable.CaptureState())
-            });
+            saveable.SaveState(data);
         }
-        return state;
+        Debug.Log($"saved {data.WorldData.BuildingData.Count} buildings");
+        return data;
     }
 
-    private void RestoreGameState(StateWrapper state)
+    private void RestoreGameState(PlayerData data)
     {
-        foreach (var saveable in Object.FindObjectsOfType<MonoBehaviour>().OfType<ISaveable>())
+        Debug.Log($"loaded {data.WorldData.BuildingData.Count} buildings");
+        foreach (var loadable in Object.FindObjectsOfType<MonoBehaviour>().OfType<ISaveable>()) 
         {
-            var saveableType = saveable.GetType().FullName;
-            var savedState = state.Objects.Find(obj => obj.ObjectType == saveableType);
-
-            if (savedState != null)
-            {
-                var stateData = JsonUtility.FromJson(savedState.State, saveable.CaptureState().GetType());
-                saveable.RestoreState(stateData);
-            }
+            loadable.LoadState(data);
         }
-    }
-
-    [System.Serializable]
-    private class StateWrapper
-    {
-        public List<SaveableState> Objects = new List<SaveableState>();
-    }
-
-    [System.Serializable]
-    private class SaveableState
-    {
-        public string ObjectType;
-        public string State;
     }
 }

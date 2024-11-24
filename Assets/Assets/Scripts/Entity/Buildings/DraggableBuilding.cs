@@ -2,7 +2,7 @@ using Assets.Scripts.Entity.Buildings;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DraggableBuilding : Building, IDraggable
+public abstract class DraggableBuilding : Building, IDraggable
 {
     
     public float SelectedAlpha = 0.5f;
@@ -14,7 +14,7 @@ public class DraggableBuilding : Building, IDraggable
         _image = GetComponent<SpriteRenderer>();
         _startColor = _image.color;
     }
-
+    
     public void Drag()
     {
         _image.color = new Color(_startColor.r, _startColor.g, _startColor.b, SelectedAlpha);

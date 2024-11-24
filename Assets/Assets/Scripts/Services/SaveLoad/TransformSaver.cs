@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TransformSaver : MonoBehaviour, ISaveable
+/*public class TransformSaver : MonoBehaviour, ISaveable
 {
     public object CaptureState()
     {
@@ -28,5 +28,10 @@ public class TransformSaver : MonoBehaviour, ISaveable
         public Quaternion Rotation;
         public Vector3 Scale;
     }
-}
+
+    public object SaveState()
+    {
+        throw new System.NotImplementedException();
+    }
+}*/
 

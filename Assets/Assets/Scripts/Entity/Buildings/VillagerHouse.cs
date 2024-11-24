@@ -5,5 +5,8 @@ using UnityEngine;
 
 public class VillagerHouse : DraggableBuilding
 {
-    
+    public override void Initialize()
+    {
+        
+    }
 }
