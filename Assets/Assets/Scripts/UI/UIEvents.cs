@@ -7,5 +7,6 @@ using UnityEngine;
 public class UIEvents
 {
     public static Action<Building> OnSelectedBuilding;
+    
     public static Action<DraggableBuilding> OnMoveBuildingButtonClick;
 }

@@ -3687,6 +3687,8 @@ GameObject:
   - component: {fileID: 602000769}
   - component: {fileID: 602000771}
   - component: {fileID: 602000772}
+  - component: {fileID: 602000773}
+  - component: {fileID: 602000774}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -3745,6 +3747,7 @@ MonoBehaviour:
   RedTile: {fileID: 11400000, guid: 691539ae31f92464699905f4041625e7, type: 2}
   OccupiedTile: {fileID: 11400000, guid: 5ed8705c051a180479404b02504dc4de, type: 2}
   CameraController: {fileID: 519420033}
+  _selectedBuilding: {fileID: 0}
 --- !u!114 &602000772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3759,6 +3762,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   VillagerHouse: {fileID: 6070126246542794634, guid: c749f01f628fd104e95a7978473e42e5, type: 3}
   Tavern: {fileID: 1642052504680873867, guid: 23db95cbe4b3a7540ae667fcd78cd8ad, type: 3}
+--- !u!114 &602000773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 602000768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5715f1259f62a04780b0a26fd87d807, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &602000774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 602000768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8b31415c8b23b34392a7b0aa51b2655, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &603912104
 GameObject:
   m_ObjectHideFlags: 0
@@ -6018,10 +6045,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1899365356}
+      - m_Target: {fileID: 297567325}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1539467323}
+        m_TargetAssemblyTypeName: BuildingWindow, Assembly-CSharp
+        m_MethodName: OnMoveButtonClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

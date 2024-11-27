@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 
-public class BuildingMoverService: Singleton<BuildingMoverService>
+//todo: рефактор
+public class BuildingMoverService: MonoBehaviour
 {
     [Header("Настройки Tilemap")]
     public Grid Grid;                       
@@ -14,39 +15,34 @@ public class BuildingMoverService: Singleton<BuildingMoverService>
     public TileBase RedTile;
     public TileBase OccupiedTile;
 
+
     [Space] public CameraController CameraController;
-               
-    public DraggableBuilding _selectedBuilding;    
-    private Vector3Int _currentCellPosition;   
+
+    public DraggableBuilding _selectedBuilding;
+    private Vector3Int _currentCellPosition;
     private bool _isDragging = false;
     private Vector3Int _startPosition;
-    
-    private PlayerControls _controls; 
+
+    private PlayerControls _controls;
+    public BuildingGridHelper _buildingGridHelper;
 
     private void Awake()
     {
-        base.Awake();
-        _controls = new PlayerControls();
-
-        _controls.Player.Click.performed += ctx => OnClick();
-        _controls.Player.Drag.performed += ctx => OnStartDragging();
-        _controls.Player.Drag.canceled += ctx => OnDragEnd();
-
-        UIEvents.OnMoveBuildingButtonClick += building =>
-        {
-            _selectedBuilding = building;
-            _isDragging = false;
-        };
+        PlayerControlsInit();
+        _buildingGridHelper =
+            new BuildingGridHelper(Grid, HiglightTilemap, BuildingTilemap, RedTile, GreenTile, OccupiedTile);
     }
 
     private void OnEnable()
     {
+        UIEvents.OnMoveBuildingButtonClick += OnStartMove;
         _controls.Enable();
         CameraController.EnterBuildingMoveState();
     }
 
     private void OnDisable()
     {
+        UIEvents.OnMoveBuildingButtonClick -= OnStartMove;
         _controls.Disable();
         CameraController.EnterIdleState();
     }
@@ -55,12 +51,12 @@ public class BuildingMoverService: Singleton<BuildingMoverService>
     { 
         if (_isDragging && _selectedBuilding != null)
         {
-            Vector3Int cellPosition = GetGridPositionUnderMouse();
+            Vector3Int cellPosition = _buildingGridHelper.GetGridPositionUnderMouse();
             cellPosition = new Vector3Int(cellPosition.x, cellPosition.y, 0);
             _selectedBuilding.transform.position = Grid.CellToWorld(cellPosition);
             if (_selectedBuilding.TryGetComponent<DraggableBuilding>(out var building))
             {
-                UpdateCellHighlight(Grid.WorldToCell(building.transform.position), building);
+                _buildingGridHelper.UpdateCellHighlight(Grid.WorldToCell(building.transform.position), building);
             }
         }
     }
@@ -82,7 +78,7 @@ public class BuildingMoverService: Singleton<BuildingMoverService>
         
         if (_selectedBuilding != null)
         {
-            if (HasTileOnRectangle(_selectedBuilding.Width,
+            if (_buildingGridHelper.HasTileOnRectangle(_selectedBuilding.Width,
                     _selectedBuilding.Heigth, Grid.WorldToCell(_selectedBuilding.transform.position), BuildingTilemap))
             {
                 _selectedBuilding.transform.position = Grid.CellToWorld(_startPosition);
@@ -100,83 +96,32 @@ public class BuildingMoverService: Singleton<BuildingMoverService>
         }
     }
 
-    private Vector3Int GetGridPositionUnderMouse()
-    {
-        Vector2 mousePosition = Mouse.current.position.ReadValue();
-        var clickPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-        return Grid.WorldToCell(clickPosition);
-    }
-
-    private void UpdateCellHighlight(Vector3Int cellPosition, Building building)
-    {
-        HiglightTilemap.ClearAllTiles();
-        for (int i = 0; i < building.Heigth; i++)
-        {
-            for (int j = 0; j < building.Width; j++)
-            {
-                var position = new Vector3Int(cellPosition.x + j, cellPosition.y + i, 0);
-                var tile = BuildingTilemap.HasTile(position)
-                    ? RedTile
-                    : GreenTile;
-                HiglightTilemap.SetTile(position, tile);
-            }
-        }
-    }
-
     private void PlaceBuilding(Vector3Int cellPosition)
     {
-        MarkCellAsOccupied(cellPosition);
+        _buildingGridHelper.SetRectangleTile(_selectedBuilding.Width, _selectedBuilding.Heigth, _startPosition, null, BuildingTilemap);
+        _buildingGridHelper.SetRectangleTile(_selectedBuilding.Width, _selectedBuilding.Heigth, cellPosition, OccupiedTile, BuildingTilemap);
     }
-
-    private void MarkCellAsOccupied(Vector3Int cellPosition)
-    {
-        if (_selectedBuilding.TryGetComponent<Building>(out var building))
-        {
-            SetRectangleTile(building.Width, building.Heigth, _startPosition, null, BuildingTilemap);
-            SetRectangleTile(building.Width, building.Heigth, cellPosition, OccupiedTile, BuildingTilemap);
-        }
-    }
-
-    private void OnStartDragging()
+    private void OnDragging()
     {
         _isDragging = true;
         if (_selectedBuilding != null && _selectedBuilding.TryGetComponent<DraggableBuilding>(out var building))
         {
-            SetRectangleTile(building.Width, building.Heigth,
+            _buildingGridHelper.SetRectangleTile(building.Width, building.Heigth,
                 Grid.WorldToCell(building.transform.position), null, BuildingTilemap);
         }
     }
 
-    private void SetRectangleTile(int width, int height, Vector3Int cellPosition, TileBase tile, Tilemap tilemap)
+    private void PlayerControlsInit()
     {
-        for (int i = 0; i < height; i++)
-        {
-            for (int j = 0; j < width; j++)
-            {
-                var position = new Vector3Int(cellPosition.x + j, cellPosition.y + i, 0);
-                tilemap.SetTile(position, tile);
-            }
-        }
+        _controls = new PlayerControls();
+
+        _controls.Player.Click.performed += ctx => OnClick();
+        _controls.Player.Drag.performed += ctx => OnDragging();
+        _controls.Player.Drag.canceled += ctx => OnDragEnd();
     }
-
-    private bool HasTileOnRectangle(int width, int height, Vector3Int cellPosition, Tilemap tilemap, TileBase tile = null)
+    private void OnStartMove(DraggableBuilding building)
     {
-        for (int i = 0; i < height; i++)
-        {
-            for (int j = 0; j < width; j++)
-            {
-                var position = new Vector3Int(cellPosition.x + j, cellPosition.y + i , 0);
-                if (tile == null && tilemap.HasTile(position))
-                {
-                    return true;
-                }
-
-                if (tile != null && tilemap.GetTile(position) == tile)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
+        _selectedBuilding = building;
+        _isDragging = false;
     }
 }
