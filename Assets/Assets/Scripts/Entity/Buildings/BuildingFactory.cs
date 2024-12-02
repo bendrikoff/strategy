@@ -7,18 +7,21 @@ using UnityEngine;
 
 public class BuildingFactory : MonoBehaviour, ISaveable
 {
+    
+    //todo: сделать сериализуемый класс где можно будет выбиррать BT
     [Header("Префабы зданий")] //Возможно заменить на Scriptable object 
     public GameObject VillagerHouse;
     public GameObject Tavern;
     
     public IReadOnlyList<Building> Buildings => allBuildings.AsReadOnly();
-    
     private List<Building> allBuildings = new List<Building>();
-    
     private Dictionary<BuildingType, GameObject> _buildingPrefabs;
+
+    private BuildingGridHelper _buildingGridHelper;
 
     private void Awake()
     {
+        _buildingGridHelper = new BuildingGridHelper(BuildingReferences.Instance.GridData);
         allBuildings = FindObjectsOfType<Building>().ToList();
         
         _buildingPrefabs = new Dictionary<BuildingType, GameObject>()
@@ -26,9 +29,6 @@ public class BuildingFactory : MonoBehaviour, ISaveable
             { BuildingType.VillagerHouse ,VillagerHouse}, 
             { BuildingType.Tavern, Tavern }
         };
-        
-        Create1();
-        Create2();
     }
 
     public void Create1()
@@ -37,7 +37,7 @@ public class BuildingFactory : MonoBehaviour, ISaveable
     }
     public void Create2()
     {
-        CreateBuilding(Vector3.one, BuildingType.VillagerHouse);
+        CreateBuilding(Vector3.zero, BuildingType.VillagerHouse);
     }
 
     
@@ -53,7 +53,10 @@ public class BuildingFactory : MonoBehaviour, ISaveable
         var newBuilding = Instantiate(prefab, position, Quaternion.identity);
         
         var buildingComponent = newBuilding.GetComponent<Building>();
+        
         buildingComponent?.Initialize();
+        //_buildingGridHelper.SetBuilding(buildingComponent, position);
+        _buildingGridHelper.SetBuildToNearPosition(buildingComponent, position);
 
         RegisterBuilding(buildingComponent);
         return newBuilding;
@@ -69,6 +72,7 @@ public class BuildingFactory : MonoBehaviour, ISaveable
     {
         if (allBuildings.Contains(building))
             allBuildings.Remove(building);
+        _buildingGridHelper.ClearBuilding(building);
     }
 
     public void SaveState(PlayerData data)
@@ -94,6 +98,7 @@ public class BuildingFactory : MonoBehaviour, ISaveable
         for (int i = 0; i < allBuildings.Count; i++)
         {
             Destroy(allBuildings[i].GameObject());
+            _buildingGridHelper.ClearBuilding(allBuildings[i]);
         }
 
         allBuildings = new();

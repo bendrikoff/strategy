@@ -1,18 +1,22 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Script.Architecture;
 using UnityEngine;
 
-public class AllServices : MonoBehaviour
+public class AllServices : Singleton<AllServices>
 {
-    // Start is called before the first frame update
-    void Start()
+    public ISaveSystem SaveSystem;
+    public PlayStateMachine PlayStateMachine;
+    protected override void Awake()
     {
-        
+        base.Awake();
+        SaveSystem = new PlayerPrefsSaveSystem();
+        PlayStateMachine = new PlayStateMachine();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        PlayStateMachine.Update();
     }
 }

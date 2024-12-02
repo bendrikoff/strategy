@@ -25,12 +25,6 @@ public class BuildingWindow : MonoBehaviour
     {
         UIEvents.OnSelectedBuilding -= Open;
     }
-
-    public void OnMoveButtonClick()
-    {
-        UIEvents.OnMoveBuildingButtonClick?.Invoke((DraggableBuilding)_selectedBuilding);
-    }
-    
     private void Open(Building building)
     {
         _selectedBuilding = building;
@@ -46,5 +40,6 @@ public class BuildingWindow : MonoBehaviour
         public BuildingType Type;
         public Sprite Icon;
         public string TextName;
+        public int BuyPrice;
     }
 }
