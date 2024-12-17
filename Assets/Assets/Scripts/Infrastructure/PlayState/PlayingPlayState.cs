@@ -14,10 +14,11 @@ public class PlayingPlayState : IState
     {
         _cameraController = cameraController;
         _controls = new PlayerControls();
-        InitializeControls();
     }
     public void Enter()
     {
+        _controls.Enable();
+        SubscribeControls();
         _cameraController.EnterIdleState();
     }
 
@@ -28,12 +29,13 @@ public class PlayingPlayState : IState
 
     public void Exit()
     {
-        
+        _controls.Disable();
+        UnSubscribeControls();
     }
 
-    private void OnClick()
+    private void OnClick(InputAction.CallbackContext obj)
     {
-        Collider2D hitCollider = Physics2D.OverlapPoint(Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue()));
+        var hitCollider = Physics2D.OverlapPoint(Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue()));
 
         if (hitCollider != null && hitCollider.TryGetComponent<Building>(out var building))
         {
@@ -41,8 +43,13 @@ public class PlayingPlayState : IState
         }
     }
     
-    private void InitializeControls()
+    private void SubscribeControls()
     {
-        _controls.Player.Click.performed += ctx => OnClick();
+        _controls.Player.Click.performed += OnClick;
+    }
+    
+    private void UnSubscribeControls()
+    {
+        _controls.Player.Click.performed += OnClick;
     }
 }

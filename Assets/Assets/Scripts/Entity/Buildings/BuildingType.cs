@@ -4,6 +4,6 @@ namespace Assets.Scripts.Entity.Buildings
 {
     public enum BuildingType
     {
-        VillagerHouse, Tavern, Tree
+        VillagerHouse, Tavern, Tree, Sawmill
     }
 }

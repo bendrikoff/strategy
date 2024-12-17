@@ -23,13 +23,13 @@ public class BuildingPlayState : IState
         
         _buildingGridHelper = new BuildingGridHelper(gridData);
         _controls = new PlayerControls();
-        InitializeControls();
     }
 
     public void Enter()
     {
         _controls.Enable();
         _cameraController.EnterBuildingMoveState();
+        SubscribeControls();
     }
     
     public void Execute()
@@ -46,15 +46,14 @@ public class BuildingPlayState : IState
         _cameraController.EnterIdleState();
         _buildingGridHelper.HideHiglight();
     }
-
-    private void InitializeControls()
+    
+    private void SubscribeControls()
     {
-        _controls.Player.Click.performed += ctx => OnClick();
-        _controls.Player.Drag.performed += ctx => StartDragging();
-        _controls.Player.Drag.canceled += ctx => StopDragging();
+        _controls.Player.Click.performed += OnClick;
+        _controls.Player.Drag.performed += StartDragging;
+        _controls.Player.Drag.canceled += StopDragging;
     }
-
-    private void OnClick()
+    private void OnClick(InputAction.CallbackContext obj)
     {
         Collider2D hitCollider = Physics2D.OverlapPoint(Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue()));
 
@@ -65,7 +64,7 @@ public class BuildingPlayState : IState
             _selectedBuilding.Drag();
         }
     }
-    private void StartDragging()
+    private void StartDragging(InputAction.CallbackContext obj)
     {
         _isDragging = true;
         if (_selectedBuilding != null && _selectedBuilding.TryGetComponent<DraggableBuilding>(out var building))
@@ -74,7 +73,7 @@ public class BuildingPlayState : IState
         }
     }
 
-    private void StopDragging()
+    private void StopDragging(InputAction.CallbackContext obj)
     {
         if (_selectedBuilding == null) return;
 

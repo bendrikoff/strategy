@@ -9,26 +9,25 @@ namespace Assets.Scripts.Infrastructure
 
         private void Awake()
         {
-            //_game = new Game();
+            _game = new Game();
                 
             DontDestroyOnLoad(this);
         }
 
         private void Update()
         {
-            //_game.Update();
+            _game.Update();
         }
         
         public void SaveGame()
         {
-            //_game.SaveSystem.Save("SceneObjects");
-            AllServices.Instance.SaveSystem.Save("SceneObjects");
+            _game.SaveSystem.Save("SceneObjects");
             Debug.Log("Game saved.");
         }
 
         public void LoadGame()
         {
-            AllServices.Instance.SaveSystem.Load("SceneObjects");
+            _game.SaveSystem.Load("SceneObjects");
             Debug.Log("Game loaded.");
         }
     }

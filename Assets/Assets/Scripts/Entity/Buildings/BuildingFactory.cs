@@ -55,7 +55,6 @@ public class BuildingFactory : MonoBehaviour, ISaveable
         var buildingComponent = newBuilding.GetComponent<Building>();
         
         buildingComponent?.Initialize();
-        //_buildingGridHelper.SetBuilding(buildingComponent, position);
         _buildingGridHelper.SetBuildToNearPosition(buildingComponent, position);
 
         RegisterBuilding(buildingComponent);
