@@ -147,4 +147,8 @@ MonoBehaviour:
   Stage: 0
   Width: 3
   Heigth: 3
+  ResourceRequirements:
+  - ResourceType: 1
+    Count: 5
   SelectedAlpha: 0.5
+  IncreaseVillagers: 2

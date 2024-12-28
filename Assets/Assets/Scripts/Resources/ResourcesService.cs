@@ -15,12 +15,43 @@ namespace Assets.Scripts.Resources
                 {ResourceType.Money, new Money()},
                 {ResourceType.Villagers, new Villagers()},
                 {ResourceType.Food, new Food()},
+                {ResourceType.Log, new BaseResource("Дерево")},
             };
+            Resources[ResourceType.Log].AddAmount(100);
+        }
+
+        public void IncreaseResource(ResourceType resource, int amount)
+        {
+            if(amount < 0)return;
+            Resources[resource].AddAmount(amount);
+        }
+
+        public bool DecreaseResource(ResourceType resource, int amount)
+        {
+            return Resources[resource].RemoveAmount(amount);
+        }
+
+        public bool CheckRequirements(List<ResourceRequirements> requirements)
+        {
+            foreach (var requirement in requirements)
+            {
+                if (!Resources.TryGetValue(requirement.ResourceType, out var resource))
+                {
+                    return false;
+                }
+                if (resource.Amount < requirement.Count)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
-
+    
+    
     public enum ResourceType
     {
-        Money, Villagers, Food
+        Money, Villagers, Food, Log
     }
 }

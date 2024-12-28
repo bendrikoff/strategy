@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class BuildingFactory : MonoBehaviour, ISaveable
 {
-    
+    //todo: добавить Requirements для каждого Stages
     //todo: сделать сериализуемый класс где можно будет выбиррать BT
     [Header("Префабы зданий")] //Возможно заменить на Scriptable object 
     public GameObject VillagerHouse;

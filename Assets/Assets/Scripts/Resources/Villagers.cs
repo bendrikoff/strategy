@@ -8,12 +8,17 @@ namespace Assets.Scripts.Resources
 
         public void AddAmount(int amount)
         {
-            throw new System.NotImplementedException();
+             if(amount < 0) return;
+             Amount += amount;
+             UIEvents.OnFreeVillagerChanged?.Invoke(Amount);
         }
 
         public bool RemoveAmount(int amount)
         {
-            throw new System.NotImplementedException();
+            if (Amount - amount < 0) return false;
+            Amount -= amount;
+            UIEvents.OnFreeVillagerChanged?.Invoke(Amount);
+            return true;
         }
     }
 }

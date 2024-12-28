@@ -8,13 +8,13 @@ using UnityEngine.UI;
 
 public class BuildingTabs : MonoBehaviour
 {
-    public Action<BuildingTabsType> OnChangeBuildingTab;
+    public Action<ProductionType> OnChangeBuildingTab;
     public Sprite ActiveTab;
     public Sprite UnActiveTab;
     public List<UITab> Tabs;
 
-    private Dictionary<BuildingTabsType, GameObject> _tabs;
-    private BuildingTabsType _selectedTab;
+    private Dictionary<ProductionType, GameObject> _tabs;
+    private ProductionType _selectedTab;
 
     private void Awake()
     {
@@ -31,7 +31,7 @@ public class BuildingTabs : MonoBehaviour
     }
     
 
-    public void OpenTab(BuildingTabsType tabType)
+    public void OpenTab(ProductionType tabType)
     {
         //if(_selectedTab == tabType) return;
         OnChangeBuildingTab?.Invoke(tabType);
@@ -45,11 +45,11 @@ public class BuildingTabs : MonoBehaviour
     public class UITab
     {
         public GameObject Tab;
-        public BuildingTabsType TabType;
+        public ProductionType TabType;
     }
 }
 [Serializable]
-public enum BuildingTabsType
+public enum ProductionType
 {
     Houses, Craft, Production
 }

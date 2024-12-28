@@ -12,7 +12,6 @@ namespace Assets.Scripts.Entity.Buildings
         public int Stage;
         public int Width;
         public int Heigth;
-        public List<ResourceRequirements> ResourceRequirements;
 
         public abstract void Initialize();
 
@@ -20,11 +19,10 @@ namespace Assets.Scripts.Entity.Buildings
         {
             return new BuildingData(Stage, Type, transform.position);
         }
-    }
-    [Serializable]
-    public class ResourceRequirements
-    {
-        public ResourceType ResourceType;
-        public int Count;
+
+        public virtual void OnMouseDown()
+        {
+            UIEvents.OnSelectedBuilding?.Invoke(this);
+        }
     }
 }

@@ -16,7 +16,8 @@ public class BaseResource : IResource
     
     public void AddAmount(int amount)
     {
-        throw new System.NotImplementedException();
+        if(amount < 0) return; 
+        Amount += amount;
     }
 
     public bool RemoveAmount(int amount)
